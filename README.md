@@ -108,6 +108,10 @@ docker stats
 # 95% = 0.09083614999999999 | 99% = 0.10547179000000004
 ```
 
+You can see a full walkthrough of the working code here in this video:   
+
+[![Video-Walkthrough](https://img.youtube.com/vi/t4MsnfUbTbY/0.jpg)](https://www.youtube.com/watch?v=t4MsnfUbTbY)
+
 # Summary
 
 ## Scalability

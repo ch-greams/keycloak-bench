@@ -136,8 +136,25 @@ This parameter needs to be accounted for, but it would be at the bottom of prior
 
 ## Paid support for Keycloak & RedHat SSO
 
-There is no paid support for Keycloak specifically.
+[RedHat SSO](https://marketplace.redhat.com/en-us/products/red-hat-single-sign-on) provides paid support and it is basically a Keycloak.
+[Pricing](https://marketplace.redhat.com/en-us/products/red-hat-single-sign-on/pricing) for it would look like this:
 
-...
+<img src="redhat-sso-pricing.png" alt="redhat sso pricing" style="width:800px;"/>
 
-## 
+And based on received information "standard" tier should be enough.
+
+For Keycloak specifically there is no paid support unfortunately.
+
+## Extra Security Integrations
+
+During the call there was mention of the tools for Dark Web Monitoring. So I did some research and at the moment I couldn't find Keycloak specific tools or extensions that would do that.
+
+But it does have functionality for [attack detection](https://www.keycloak.org/docs-api/20.0.2/rest-api/index.html#_attack_detection_resource).
+
+# Next Steps
+
+To better understand our needs and current situation we need to do testing in as close to real environment as possible, this would include following points:
+
+1. Research of existing auth systems and plan future architecture 
+1. Setup and play around with prototypes that can work in our situation
+1. Use different types of hardware and run more benchmarks to test planned setup  

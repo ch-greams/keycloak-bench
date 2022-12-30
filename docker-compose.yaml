@@ -1,0 +1,48 @@
+
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: on-failure
+    depends_on:
+      - keycloak
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "3000:3000"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.2
+    command: start-dev
+    depends_on:
+      kc-database:
+        condition: service_healthy
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://kc-database/
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_PROXY: edge
+      KC_CACHE: ispn
+
+  kc-database:
+    image: postgres:14
+    command: postgres -c 'max_connections=300'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - kc-postgres-db:/var/lib/postgresql/data
+
+volumes:
+  kc-postgres-db:

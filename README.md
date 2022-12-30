@@ -1,14 +1,14 @@
 
 # Keycloak As Auth Solution
 
-Current project was created to demonstrate possibility of scaling for a keycloak setup.
+The current project was created to demonstrate the possibility of scaling for a keycloak setup.
 
 ### Hardware
 
 | Parameter               | Value                               |
 | ----                    | ----                                |
 | Model Name              | MacBook Pro                         |
-| Model Identifier	      | MacBookPro18,2                      |
+| Model Identifier        | MacBookPro18,2                      |
 | Model Number            | Z14X000AEFN/A                       |
 | Chip                    | Apple M1 Max                        |
 | Total Number of Cores   | 10 (8 performance and 2 efficiency) |
@@ -18,11 +18,11 @@ Current project was created to demonstrate possibility of scaling for a keycloak
 ## Setup 
 
 Start with a bit of the disclaimer, while this project will showcase scalability it will also differ from real setup in several ways.
-Main difference that is also a bottleneck here is the postgres setup, in aws you'd use [Aurora](https://aws.amazon.com/rds/aurora/), while here you just have single self-hosted instance.
-Two other notable differences is that it was run using docker with "single-node" setup, instead of using kubernetes cluster with multiple nodes.
+The main difference that is also a bottleneck here is the postgres setup, in aws you'd use [Aurora](https://aws.amazon.com/rds/aurora/), while here you just have a single self-hosted instance.
+Two other notable differences are that it was run using docker with "single-node" setup, instead of using a kubernetes cluster with multiple nodes.
 
-Otherwise we use multiple keycloak containers that are able efficiently utilize CPUs available available from Docker.
-Primitive nginx load balancer was added in front of keycloak containers and distributed cache was enabled, so all containers can work well together.
+Otherwise, we use multiple keycloak containers that are able efficiently to utilize CPUs available from Docker.
+A primitive nginx load balancer was added in front of keycloak containers and the distributed cache was enabled, so all containers can work well together.
 
 ## A bit about cache
 
@@ -45,7 +45,7 @@ But it is possible to configure it in a lot more detail specific to our cloud pr
 
 ```sh
 
-# Following command will start docker network with 8 keycloak containers, I will suggest using number of containers close to your available CPUs for best performance
+# Following command will start docker network with 8 keycloak containers, I will suggest using a number of containers close to your available CPUs for the best performance
 # For example you can notice results like this from ./token_creation_batch.rb script
     # # Keycloak x2 | CPUs x6
     # avg = 1.3766662633333333s | min = 0.261287s | max = 1.893616s
@@ -59,9 +59,9 @@ But it is possible to configure it in a lot more detail specific to our cloud pr
 docker compose up --scale keycloak=8
 
 # It's possible to check current resources through `stats` command, where you will notice that only 2 where CPUs are at max usage:
-# 1 - Startup, which is somewhat of the characteristic for java-based applications. It doesn't take long and we can avoid being affected by it, by setting up `ready`/`health` endpoint and checking them before marking pod as `ready`
+# 1 - Startup, which is somewhat of the characteristic of java-based applications. It doesn't take long and we can avoid being affected by it, by setting up `ready`/`health` endpoints and checking them before marking the pod as `ready`
 # 2 - Batch logins or other creation of resources
-# Otherwise it will stay at minimum few percent
+# Otherwise it will stay at a minimum few percent
 docker stats
 
 # OUTPUT EXAMPLE:
@@ -112,27 +112,27 @@ docker stats
 
 ## Scalability
 
-As you can see from the data above, it's possible to quite easily scale keycloak horizontally by running multiple containers and use distributed cache.
+As you can see from the data above, it's possible to quite easily scale keycloak horizontally by running multiple containers and using distributed cache.
 
-Even though current setup uses a single node, there's no difference in implementation for multi-node cluster where you can spread pods across them.
+Even though the current setup uses a single node, there's no difference in implementation for the multi-node cluster where you can spread pods across them.
 
 PS While this work doesn't attempt scale to millions of users there are a lot of examples from different teams that do that (for example 45+ million here https://www.youtube.com/watch?v=XydR3QKkQIM)
 
 ## Cost?
 
-Overall I would say single developer can support this setup, while hardware cost really depends on a couple of variables:
+Overall I would say a single developer can support this setup, while hardware cost really depends on a couple of variables:
 
-> How much users we expect to be using auth functionality at the same time?
+> How many users do we expect to be using auth functionality at the same time?
 
 While I did collect information that we have about 12000 user identities across 92 integrators, it's difficult to estimate how often we can get bursts of hundreds of users logging in at the same time.
 
 > What would be the acceptable latency for 95 & 99 percentiles?
 
-This is very much connected to the first point, even current setup can easily login couple of hundreds of users at the same time with latency under 2 sec, and if that happens once a week that could be acceptable depending on requirements. 
+This is very much connected to the first point, even the current setup can easily login a couple of hundreds of users at the same time with latency under 2 sec, and if that happens once a week that could be acceptable depending on requirements. 
 
-> What is the total amount of users do we want to accommodate in a near future?
+> What is the total amount of users we want to accommodate in a near future?
 
-This parameter needs to be accounted for, but it would be at the bottom of priorities because I don't really see a possibility to use considerable amount of disk space without millions of users.
+This parameter needs to be accounted for, but it would be at the bottom of priorities because I don't really see a possibility to use a considerable amount of disk space without millions of users.
 
 ## Paid support for Keycloak & RedHat SSO
 
@@ -141,20 +141,20 @@ This parameter needs to be accounted for, but it would be at the bottom of prior
 
 <img src="redhat-sso-pricing.png" alt="redhat sso pricing" style="width:800px;"/>
 
-And based on received information "standard" tier should be enough.
+And based on the received information "standard" tier should be enough.
 
-For Keycloak specifically there is no paid support unfortunately.
+For Keycloak specifically, there is no paid support, unfortunately.
 
 ## Extra Security Integrations
 
-During the call there was mention of the tools for Dark Web Monitoring. So I did some research and at the moment I couldn't find Keycloak specific tools or extensions that would do that.
+During the call, there was mention of the tools for Dark Web Monitoring. So I did some research and at the moment I couldn't find Keycloak-specific tools or extensions that would do that.
 
 But it does have functionality for [attack detection](https://www.keycloak.org/docs-api/20.0.2/rest-api/index.html#_attack_detection_resource).
 
 # Next Steps
 
-To better understand our needs and current situation we need to do testing in as close to real environment as possible, this would include following points:
+To better understand our needs and the current situation we need to do testing as close to a real environment as possible, this would include the following points:
 
-1. Research of existing auth systems and plan future architecture 
+1. Research existing auth systems and plan future architecture 
 1. Setup and play around with prototypes that can work in our situation
-1. Use different types of hardware and run more benchmarks to test planned setup  
+1. Use different types of hardware and run more benchmarks to test the planned setup  

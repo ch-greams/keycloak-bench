@@ -18,6 +18,23 @@ def post_form(url, payload)
     http.request(request)
 end
 
+def admin_login()
+
+    admin_token_response = post_form(
+        "#{$keycloak_basepath}/realms/master/protocol/openid-connect/token",
+        {
+          grant_type: 'password',
+          client_id: 'admin-cli',
+          username: 'admin',
+          password: 'admin',
+        }
+    )
+      
+    puts "admin_token_response = #{admin_token_response.code}"
+
+    return JSON.parse(admin_token_response.body)['access_token']
+end
+
 def post_json(url, payload, admin_token)
     uri = URI(url)
   
@@ -34,24 +51,6 @@ def post_json(url, payload, admin_token)
   
     http.request(request)
 end
-
-
-################################################################################
-# Create token for admin
-################################################################################
-
-admin_token_response = post_form(
-  "#{$keycloak_basepath}/realms/master/protocol/openid-connect/token",
-  {
-    grant_type: 'password',
-    client_id: 'admin-cli',
-    username: 'admin',
-    password: 'admin',
-  }
-)
-
-puts "admin_token_response = #{admin_token_response.code}"
-admin_token = JSON.parse(admin_token_response.body)['access_token']
 
 ################################################################################
 # Create users
@@ -86,6 +85,8 @@ full_start = Time.now
 for i_batch in 0...50 do
 
     puts "---- batch start ----"
+
+    admin_token = admin_login()
 
     r_start = i_batch * $batch_size + 1
     r_end = (i_batch + 1) * $batch_size
